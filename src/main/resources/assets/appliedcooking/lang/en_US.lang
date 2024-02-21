@@ -1,0 +1,7 @@
+tile.kitchen_station.name=Kitchen Station
+
+appliedcooking.tooltip.connected=Connected
+appliedcooking.tooltip.shift_for_more=§r> Hold §3Shift§r for more information
+appliedcooking.tooltip.kitchen_station=use connected wireless terminal right click Kitchen Station to connect network
+
+
