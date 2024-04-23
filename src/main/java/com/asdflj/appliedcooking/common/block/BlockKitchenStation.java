@@ -8,10 +8,12 @@ import net.blay09.mods.cookingforblockheads.CookingForBlockheads;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.asdflj.appliedcooking.common.item.ItemKitchenStation;
@@ -36,6 +38,8 @@ public class BlockKitchenStation extends BaseBlockContainer implements IRegister
     public BlockKitchenStation() {
         super(Material.iron);
         this.setBlockName(NameConst.BLOCK_KITCHEN_STATION);
+        this.setHardness(2.0f);
+        this.setResistance(10.0f);
     }
 
     @Override
@@ -108,6 +112,27 @@ public class BlockKitchenStation extends BaseBlockContainer implements IRegister
             tile.removeListener();
         }
         super.breakBlock(worldIn, x, y, z, blockBroken, meta);
+    }
+
+    @Override
+    public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase player, ItemStack itemstack) {
+        int l = MathHelper.floor_double(player.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
+
+        if (l == 0) {
+            world.setBlockMetadataWithNotify(x, y, z, 2, 2);
+        }
+
+        if (l == 1) {
+            world.setBlockMetadataWithNotify(x, y, z, 5, 2);
+        }
+
+        if (l == 2) {
+            world.setBlockMetadataWithNotify(x, y, z, 3, 2);
+        }
+
+        if (l == 3) {
+            world.setBlockMetadataWithNotify(x, y, z, 4, 2);
+        }
     }
 
     @Override
