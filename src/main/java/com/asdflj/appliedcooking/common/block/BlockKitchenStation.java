@@ -12,7 +12,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
@@ -96,7 +96,7 @@ public class BlockKitchenStation extends BaseBlockContainer implements IRegister
         } else {
             final ILocatable securityStation = Util.getSecurityStation(tile.getKey());
             if (securityStation != null) {
-                player.addChatMessage(new ChatComponentText(I18n.format(NameConst.TT_CONNECTED)));
+                player.addChatMessage(new ChatComponentTranslation(NameConst.TT_CONNECTED));
             } else {
                 player.addChatMessage(PlayerMessages.StationCanNotBeLocated.get());
                 return false;
