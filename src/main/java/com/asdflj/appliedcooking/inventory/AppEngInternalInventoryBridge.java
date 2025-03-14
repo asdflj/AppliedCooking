@@ -5,8 +5,10 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import com.asdflj.appliedcooking.util.WirelessObject;
 
+import appeng.api.storage.data.IAEItemStack;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.tile.inventory.InvOperation;
+import appeng.util.item.AEItemStack;
 
 public class AppEngInternalInventoryBridge extends AppEngInternalInventory {
 
@@ -29,7 +31,24 @@ public class AppEngInternalInventoryBridge extends AppEngInternalInventory {
         if (this.obj != null && this.eventsEnabled()) {
             this.obj.onChangeInventory(this, slot, InvOperation.setInventorySlotContents, newItemStack, oldStack);
         }
+    }
 
+    @Override
+    public ItemStack getStackInSlot(int slot) {
+        if (this.obj.getStorageList() == null) {
+            return null;
+        }
+        IAEItemStack item = AEItemStack.create(super.getStackInSlot(slot));
+        if (item == null) {
+            return null;
+        }
+        IAEItemStack stored = this.obj.getItemStorage()
+            .getStorageList()
+            .findPrecise(item);
+        if (stored == null) {
+            return null;
+        }
+        return stored.getItemStack();
     }
 
     @Override

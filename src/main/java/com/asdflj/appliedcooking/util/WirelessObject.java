@@ -27,6 +27,7 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.api.util.AECableType;
 import appeng.api.util.IConfigManager;
+import appeng.core.AELog;
 import appeng.tile.inventory.InvOperation;
 
 public class WirelessObject implements IWirelessObject {
@@ -250,21 +251,31 @@ public class WirelessObject implements IWirelessObject {
                 .createItemStack(oldStack);
             stored = this.getStorageList()
                 .findPrecise(is);
-            this.extractItems(stored, Actionable.MODULATE, this.source);
+            if (stored != null && stored.getStackSize() != 0) {
+                this.extractItems(stored, Actionable.MODULATE, this.source);
+            } else {
+                AELog.error("Cache breakdown stored item is null, cannot extract item");
+                this.needUpdate = true;
+            }
         } else {
             IAEItemStack is = AEApi.instance()
                 .storage()
                 .createItemStack(resultStack);
             stored = this.getStorageList()
                 .findPrecise(is);
-            if (stored.getStackSize() > Integer.MAX_VALUE) {
-                is.incStackSize(stored.getStackSize() - Integer.MAX_VALUE);
+            if (stored != null && stored.getStackSize() != 0) {
+                if (stored.getStackSize() > Integer.MAX_VALUE) {
+                    is.incStackSize(stored.getStackSize() - Integer.MAX_VALUE);
+                }
+                stored.decStackSize(is.getStackSize());
+                this.extractItems(stored, Actionable.MODULATE, this.source);
+                stored = this.getStorageList()
+                    .findPrecise(is);
+                inv.getStackInSlot(slot).stackSize = stored.getItemStack().stackSize; // refill itemStack
+            } else {
+                AELog.error("Cache breakdown stored item is null, cannot extract item");
+                this.needUpdate = true;
             }
-            stored.decStackSize(is.getStackSize());
-            this.extractItems(stored, Actionable.MODULATE, this.source);
-            stored = this.getStorageList()
-                .findPrecise(is);
-            inv.getStackInSlot(slot).stackSize = stored.getItemStack().stackSize; // refill itemStack
         }
     }
 
