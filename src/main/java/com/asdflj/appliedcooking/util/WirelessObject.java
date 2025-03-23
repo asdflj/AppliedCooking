@@ -264,11 +264,8 @@ public class WirelessObject implements IWirelessObject {
             stored = this.getStorageList()
                 .findPrecise(is);
             if (stored != null && stored.getStackSize() != 0) {
-                if (stored.getStackSize() > Integer.MAX_VALUE) {
-                    is.incStackSize(stored.getStackSize() - Integer.MAX_VALUE);
-                }
-                stored.decStackSize(is.getStackSize());
-                this.extractItems(stored, Actionable.MODULATE, this.source);
+                is.setStackSize(1);
+                this.extractItems(is, Actionable.MODULATE, this.source);
                 stored = this.getStorageList()
                     .findPrecise(is);
                 inv.getStackInSlot(slot).stackSize = stored.getItemStack().stackSize; // refill itemStack
