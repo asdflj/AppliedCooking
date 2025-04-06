@@ -1,0 +1,20 @@
+{
+  "required": true,
+  "minVersion": "0",
+  "package": "com.asdflj.appliedcooking.mixins",
+  "refmap": "mixins.appliedcooking.refmap.json",
+  "target": "@env(DEFAULT)",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "client": [
+    "MixinCookingRegistry",
+    "MixinInventoryCraftBook",
+    "MixinContainerRecipeBook"
+  ],
+  "server": [
+    "MixinCookingRegistry",
+    "MixinInventoryCraftBook",
+    "MixinContainerRecipeBook"
+  ]
+}

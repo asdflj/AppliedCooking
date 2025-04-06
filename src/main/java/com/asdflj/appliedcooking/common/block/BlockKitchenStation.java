@@ -5,7 +5,6 @@ import static net.minecraft.client.gui.GuiScreen.isShiftKeyDown;
 import java.util.List;
 
 import net.blay09.mods.cookingforblockheads.CookingForBlockheads;
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
@@ -103,15 +102,6 @@ public class BlockKitchenStation extends BaseBlockContainer implements IRegister
             }
         }
         return true;
-    }
-
-    @Override
-    public void breakBlock(World worldIn, int x, int y, int z, Block blockBroken, int meta) {
-        TileKitchenStation tile = (TileKitchenStation) getTileEntity(worldIn, x, y, z);
-        if (tile != null) {
-            tile.removeListener();
-        }
-        super.breakBlock(worldIn, x, y, z, blockBroken, meta);
     }
 
     @Override

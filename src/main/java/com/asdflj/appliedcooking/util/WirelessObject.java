@@ -17,7 +17,6 @@ import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.BaseActionSource;
 import appeng.api.networking.security.MachineSource;
-import appeng.api.networking.storage.IBaseMonitor;
 import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IMEMonitorHandlerReceiver;
@@ -27,7 +26,6 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.api.util.AECableType;
 import appeng.api.util.IConfigManager;
-import appeng.core.AELog;
 import appeng.tile.inventory.InvOperation;
 
 public class WirelessObject implements IWirelessObject {
@@ -39,13 +37,16 @@ public class WirelessObject implements IWirelessObject {
     private final TileKitchenStation tile;
     private AppEngInternalInventoryBridge inv;
     private final MachineSource source;
-    private boolean needUpdate = false;
     private long lastKey;
 
     public WirelessObject(TileKitchenStation tile) {
         this.tile = tile;
         this.source = new MachineSource(this);
         this.reinitialize();
+    }
+
+    public BaseActionSource getSource() {
+        return source;
     }
 
     public boolean reCheckIsConnect() {
@@ -86,12 +87,10 @@ public class WirelessObject implements IWirelessObject {
                 this.iGridNode = n;
                 this.targetGrid = n.getGrid();
                 if (targetGrid != null) {
-                    this.removeListener(this); // remove old listener
                     this.lastKey = this.tile.getKey();
                     this.sg = targetGrid.getCache(IStorageGrid.class);
                     if (this.sg != null) {
                         this.itemStorage = this.sg.getItemInventory();
-                        this.addListener(this, this.getItemStorage());
                     }
                 }
             }
@@ -221,14 +220,8 @@ public class WirelessObject implements IWirelessObject {
     @Override
     public IInventory getInventory() {
         if (this.itemStorage != null) {
-            if (this.needUpdate || this.inv == null) {
+            if (this.inv == null) {
                 this.inv = new AppEngInternalInventoryBridge(this);
-                int i = 0;
-                for (IAEItemStack is : this.itemStorage.getStorageList()) {
-                    inv.push(i, is.getItemStack());
-                    i++;
-                }
-                this.needUpdate = false;
             }
             return inv;
         }
@@ -242,39 +235,7 @@ public class WirelessObject implements IWirelessObject {
 
     @Override
     public void onChangeInventory(IInventory inv, int slot, InvOperation mc, ItemStack resultStack,
-        ItemStack oldStack) {
-        IAEItemStack stored;
-        if (resultStack == null) {
-            // removed all item
-            IAEItemStack is = AEApi.instance()
-                .storage()
-                .createItemStack(oldStack);
-            stored = this.getStorageList()
-                .findPrecise(is);
-            if (stored != null && stored.getStackSize() != 0) {
-                this.extractItems(stored, Actionable.MODULATE, this.source);
-            } else {
-                AELog.error("Cache breakdown stored item is null, cannot extract item");
-                this.needUpdate = true;
-            }
-        } else {
-            IAEItemStack is = AEApi.instance()
-                .storage()
-                .createItemStack(resultStack);
-            stored = this.getStorageList()
-                .findPrecise(is);
-            if (stored != null && stored.getStackSize() != 0) {
-                is.setStackSize(1);
-                this.extractItems(is, Actionable.MODULATE, this.source);
-                stored = this.getStorageList()
-                    .findPrecise(is);
-                inv.getStackInSlot(slot).stackSize = stored.getItemStack().stackSize; // refill itemStack
-            } else {
-                AELog.error("Cache breakdown stored item is null, cannot extract item");
-                this.needUpdate = true;
-            }
-        }
-    }
+        ItemStack oldStack) {}
 
     @Override
     public IGridNode getActionableNode() {
@@ -298,21 +259,5 @@ public class WirelessObject implements IWirelessObject {
 
     public IMEMonitor<IAEItemStack> getItemStorage() {
         return this.itemStorage;
-    }
-
-    @Override
-    public boolean isValid(Object verificationToken) {
-        return this.itemStorage != null && this.itemStorage == verificationToken /* && !conflict */;
-    }
-
-    @Override
-    public void postChange(IBaseMonitor<IAEItemStack> monitor, Iterable<IAEItemStack> change,
-        BaseActionSource actionSource) {
-        this.needUpdate = true;
-    }
-
-    @Override
-    public void onListUpdate() {
-
     }
 }
