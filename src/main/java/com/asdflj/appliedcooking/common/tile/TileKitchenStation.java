@@ -44,12 +44,6 @@ public class TileKitchenStation extends AEBaseTile implements IKitchenStoragePro
         return Util.EmptyInventory;
     }
 
-    public void removeListener() {
-        if (this.wirelessObject != null) {
-            this.wirelessObject.removeListener(this.wirelessObject);
-        }
-    }
-
     @TileEvent(TileEventType.WORLD_NBT_READ)
     public void readFromNBTEvent(NBTTagCompound data) {
         this.setKey(data.getLong("key"));
