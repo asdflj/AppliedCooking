@@ -140,12 +140,8 @@ public abstract class MixinInventoryCraftBook extends InventoryCrafting {
                                             .getSource());
                                 if (ingredients.get(i)
                                     .isValidItem(extracted.getItemStack())) {
-                                    if (usedItem == null) {
-                                        usedStacks.add(result);
-                                    } else {
-                                        usedStacks.findPrecise(result)
-                                            .incStackSize(1);
-                                    }
+                                    extracted.setStackSize(1);
+                                    usedStacks.add(extracted);
                                     if (checkHasEnoughItem(
                                         usedStacks,
                                         aeInv.getWirelessObject()
