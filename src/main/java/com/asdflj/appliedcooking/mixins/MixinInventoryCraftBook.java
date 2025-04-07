@@ -131,6 +131,8 @@ public abstract class MixinInventoryCraftBook extends InventoryCrafting {
                                         aeInv.getWirelessObject()
                                             .getSource());
                                 if (extracted == null) continue;
+                                extracted = extracted.copy();
+                                extracted.setCraftable(false);
                                 aeInv.getWirelessObject()
                                     .getItemStorage()
                                     .injectItems(
