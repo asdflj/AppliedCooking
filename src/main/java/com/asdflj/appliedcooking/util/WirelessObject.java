@@ -65,7 +65,11 @@ public class WirelessObject implements IWirelessObject {
         }
         if (obj instanceof IGridHost ig) {
             final IGridNode n = ig.getGridNode(ForgeDirection.UNKNOWN);
-            return n.isActive();
+            boolean active = n.isActive();
+            if (active && this.getStorageList() == null) {
+                reinitialize();
+            }
+            return active;
         }
         return false;
     }
@@ -219,13 +223,10 @@ public class WirelessObject implements IWirelessObject {
 
     @Override
     public IInventory getInventory() {
-        if (this.itemStorage != null) {
-            if (this.inv == null) {
-                this.inv = new AppEngInternalInventoryBridge(this);
-            }
-            return inv;
+        if (this.inv == null) {
+            this.inv = new AppEngInternalInventoryBridge(this);
         }
-        return null;
+        return inv;
     }
 
     @Override
