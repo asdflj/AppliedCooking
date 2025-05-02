@@ -2,6 +2,7 @@ package com.asdflj.appliedcooking.util;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.asdflj.appliedcooking.common.tile.TileKitchenStation;
@@ -38,6 +39,7 @@ public class WirelessObject implements IWirelessObject {
     private AppEngInternalInventoryBridge inv;
     private final MachineSource source;
     private long lastKey;
+    private int lastTickCount = 0;
 
     public WirelessObject(TileKitchenStation tile) {
         this.tile = tile;
@@ -65,11 +67,7 @@ public class WirelessObject implements IWirelessObject {
         }
         if (obj instanceof IGridHost ig) {
             final IGridNode n = ig.getGridNode(ForgeDirection.UNKNOWN);
-            boolean active = n.isActive();
-            if (active && this.getStorageList() == null) {
-                reinitialize();
-            }
-            return active;
+            return n.isActive();
         }
         return false;
     }
@@ -226,6 +224,13 @@ public class WirelessObject implements IWirelessObject {
         if (this.inv == null) {
             this.inv = new AppEngInternalInventoryBridge(this);
         }
+        if (MinecraftServer.getServer()
+            .getTickCounter() != lastTickCount) {
+            this.reinitialize();
+            lastTickCount = MinecraftServer.getServer()
+                .getTickCounter();
+        }
+
         return inv;
     }
 
